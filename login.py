@@ -8,7 +8,7 @@ import bcrypt
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 
-cred = credentials.Certificate("app/account_service.json")
+cred = credentials.Certificate("account_service.json")
 initialize_app(cred)
 db = firestore.client()
 
