@@ -7,7 +7,7 @@ from firebase_admin import credentials, initialize_app, firestore
 logger = logging.getLogger(__name__)
 
 # Initialize Firebase
-cred = credentials.Certificate("credentials.json")
+cred = credentials.Certificate("D:\project-topic10\Cryptography\myproject\myapp\credentials.json")
 initialize_app(cred)
 db = firestore.client()
 
@@ -38,26 +38,31 @@ def login(request):
 
 def api_call(request):
     if request.method == 'GET':
-        token = request.session.get('token')
+        token = request.headers.get('Authorization')
         if not token:
-            logger.error('No token found in session')
+            logger.error('No token found in request headers')
             return JsonResponse({'message': 'Unauthorized'}, status=401)
 
-        server_url = 'http://localhost:5001/api_gateway'
-        headers = {'Authorization': token}
+        token = token.split(' ')[1]  # Bỏ từ "Bearer"
 
+        server_url = 'http://localhost:5001/api_gateway'
+        headers = {'Authorization': f'Bearer {token}'}
         try:
             response = requests.get(server_url, headers=headers)
             if response.status_code == 200:
-                role = JsonResponse(response.json())
+                role = response.json().get('role')
                 if role == 'admin':
                     users = [doc.to_dict() for doc in db.collection('users').stream()]
-                    return JsonResponse({'users': users}), 200
+                    return JsonResponse({'users': users}, status=200)
+                else:
+                    return JsonResponse({'message': 'Forbidden'}, status=403)
+            else:
+                return JsonResponse({'message': 'Failed to get role from server'}, status=response.status_code)
         except requests.exceptions.HTTPError as http_err:
             logger.error(f'HTTP error occurred: {http_err}')
             return JsonResponse({'message': 'Failed to get users'}, status=response.status_code)
         except Exception as err:
             logger.error(f'Other error occurred: {err}')
             return JsonResponse({'message': 'Failed to get users'}, status=500)
-
     return JsonResponse({'message': 'Method not allowed'}, status=405)
+

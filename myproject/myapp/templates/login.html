@@ -47,12 +47,17 @@
 
         async function getAllUsers() {
             const token = sessionStorage.getItem('token');
+            if (!token) {
+                alert('No token found');
+                return;
+            }
+
             const response = await fetch('/api_call/', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                dataType: 'json'
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
 
             const data = await response.json();
@@ -66,6 +71,8 @@
                 alert(`Failed to get users: ${data.message}`);
             }
         }
+
+
     </script>
 </head>
 <body>
