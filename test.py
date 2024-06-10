@@ -2,6 +2,8 @@ import bcrypt
 
 password = 'password'
 
-hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+hash1 = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(10))
+hash2 = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(10))
 
-print(hashed_password.decode('utf-8'))
+print(hash1.decode('utf-8'))
+print(hash2.decode('utf-8'))

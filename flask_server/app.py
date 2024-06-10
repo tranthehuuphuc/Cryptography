@@ -4,11 +4,17 @@ import jwt
 import datetime
 import secrets
 import bcrypt
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
+# Set the secret key for the session. This should be a random and unique string.
+app.secret_key = secrets.token_hex(32)  # You can also use any other method to generate a secure key.
+
 app.config['SESSION_TYPE'] = 'filesystem'
 
-cred = credentials.Certificate("account_service.json")
+cred = credentials.Certificate("credentials.json")
 initialize_app(cred)
 db = firestore.client()
 
@@ -25,25 +31,21 @@ def login():
     data = request.json
     username = data.get('username')
     password = data.get('password')
-    
-    user_ref = db.collection('users').where('username', '==', username).where('password', '==', password).stream()
+
+    user_ref = db.collection('users').where('username', '==', username).stream()
     user = next(user_ref, None)
-    
+
     if user:
         user_data = user.to_dict()
         stored_hashed_password = user_data['password'].encode('utf-8')
         if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password):
-            session['secret_key'] = generate_session_secret_key()  # Tạo khóa bí mật mới cho phiên
-            user_data = user.to_dict()
-            payload = {
-                'user_id': user.id,
-                'role': user_data['role']
-            }
-            token = create_jwt(payload, session['secret_key'])  # Tạo JWT với khóa bí mật phiên mới
-            session['jwt'] = token # Lưu JWT vào phiên
-            return jsonify({'token': token}), 200 # Trả về JWT cho người dùng
-        
-    return jsonify({'message': 'Invalid credentials'}), 401
+            session['secret_key'] = generate_session_secret_key()
+            payload = {'user_id': user.id, 'role': user_data['role']}
+            token = create_jwt(payload, session['secret_key'])
+            session['jwt'] = token
+            return jsonify({'token': token}), 200
+        return jsonify({'message': 'Wrong password'}), 401
+    return jsonify({'message': 'No user'}), 401
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
