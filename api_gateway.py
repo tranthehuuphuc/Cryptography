@@ -10,8 +10,12 @@ def api_gateway():
 
     # Forward client token to app_endpoint
     if client_token:
-        response = requests.get('http://localhost:5000/app_endpoint', headers={'Authorization': client_token})
-        return response.json()
+        response = requests.get('http://localhost:5002/app_endpoint', headers={'Authorization': client_token})
+        
+        if response.status_code == 200:
+            return jsonify(response.json())
+        else:
+            return jsonify({'message': 'Unauthorized'}), 401
     return jsonify({'message': 'Unauthorized'}), 401
 
 if __name__ == '__main__':

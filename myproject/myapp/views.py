@@ -5,6 +5,9 @@ import requests
 def login_page(request):
     return render(request, 'login.html')
 
+def home_page(request):
+    return render(request, 'home.html')
+
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -20,6 +23,7 @@ def login(request):
         if response.status_code == 200:
             token = response.json().get('token')
             request.session['token'] = token
+            home_page(request)
             return JsonResponse({'message': 'Login successful', 'token': token})
         else:
             error_message = response.json().get('message')
@@ -27,15 +31,21 @@ def login(request):
 
     return JsonResponse({'message': 'Method not allowed'}, status=405)
 
-def call_api(token):
+def call_api(request, api_id):
+    token = request.session['token']
+    if not token:
+        return JsonResponse({'message': 'Unauthorized'}, status=401)
+    
     # Define the URL of the API gateway endpoint
     api_gateway_url = 'http://localhost:5001/api_gateway'
 
     # Set the authorization header with the token
     headers = {'Authorization': token}
 
+    additional_data = {'api_id': api_id}
+
     # Make a GET request to the API gateway endpoint
-    response = requests.get(api_gateway_url, headers=headers)
+    response = requests.get(api_gateway_url, headers=headers, json=additional_data)
 
     # Check the response status code
     if response.status_code == 200:

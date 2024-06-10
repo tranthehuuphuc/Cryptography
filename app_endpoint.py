@@ -12,8 +12,6 @@ def app_endpoint():
     try:
         # Get client token from request headers
         auth_header = request.headers.get('Authorization')
-        data = request.json
-        api_id = data.get('api_id')
         if not auth_header:
             return jsonify({'message': 'Unauthorized'}), 401
         
@@ -34,10 +32,10 @@ def app_endpoint():
                     # Authentication module
                     if client_payload['user_id'] == server_payload['user_id']:
                         # Authorization module
-                        if server_payload['role'] == 'admin' and api_id == 111:
-                            return jsonify({'message': 'Hello admin! You can use this API.'}), 200
+                        if server_payload['role'] == 'admin':
+                            return jsonify({'message': 'Hello admin!'})
                         else:
-                            return jsonify({'message': 'Hello user! Permission denied.'}), 403
+                            return jsonify({'message': 'Hello user!'})
                     else:
                         return jsonify({'message': 'Unauthorized'}), 401
                 else:
