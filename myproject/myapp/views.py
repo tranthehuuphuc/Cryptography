@@ -1,12 +1,18 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import requests
+import logging
+from firebase_admin import credentials, initialize_app, firestore
+
+logger = logging.getLogger(__name__)
+
+# Initialize Firebase
+cred = credentials.Certificate("credentials.json")
+initialize_app(cred)
+db = firestore.client()
 
 def login_page(request):
     return render(request, 'login.html')
-
-def home_page(request):
-    return render(request, 'home.html')
 
 def login(request):
     if request.method == 'POST':
@@ -23,7 +29,6 @@ def login(request):
         if response.status_code == 200:
             token = response.json().get('token')
             request.session['token'] = token
-            home_page(request)
             return JsonResponse({'message': 'Login successful', 'token': token})
         else:
             error_message = response.json().get('message')
@@ -31,27 +36,28 @@ def login(request):
 
     return JsonResponse({'message': 'Method not allowed'}, status=405)
 
-def call_api(request, api_id):
-    token = request.session['token']
-    if not token:
-        return JsonResponse({'message': 'Unauthorized'}, status=401)
-    
-    # Define the URL of the API gateway endpoint
-    api_gateway_url = 'http://localhost:5001/api_gateway'
+def api_call(request):
+    if request.method == 'GET':
+        token = request.session.get('token')
+        if not token:
+            logger.error('No token found in session')
+            return JsonResponse({'message': 'Unauthorized'}, status=401)
 
-    # Set the authorization header with the token
-    headers = {'Authorization': token}
+        server_url = 'http://localhost:5001/api_gateway'
+        headers = {'Authorization': token}
 
-    additional_data = {'api_id': api_id}
+        try:
+            response = requests.get(server_url, headers=headers)
+            if response.status_code == 200:
+                role = JsonResponse(response.json())
+                if role == 'admin':
+                    users = [doc.to_dict() for doc in db.collection('users').stream()]
+                    return JsonResponse({'users': users}), 200
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(f'HTTP error occurred: {http_err}')
+            return JsonResponse({'message': 'Failed to get users'}, status=response.status_code)
+        except Exception as err:
+            logger.error(f'Other error occurred: {err}')
+            return JsonResponse({'message': 'Failed to get users'}, status=500)
 
-    # Make a GET request to the API gateway endpoint
-    response = requests.get(api_gateway_url, headers=headers, json=additional_data)
-
-    # Check the response status code
-    if response.status_code == 200:
-        # If the request was successful, return the response JSON
-        return response.json()
-    else:
-        # If there was an error, print the error message
-        print(f"Error: {response.status_code} - {response.text}")
-        return None
+    return JsonResponse({'message': 'Method not allowed'}, status=405)

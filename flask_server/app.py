@@ -9,9 +9,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Set the secret key for the session. This should be a random and unique string.
-app.secret_key = secrets.token_hex(32)  # You can also use any other method to generate a secure key.
-
+app.secret_key = secrets.token_hex(32)
 app.config['SESSION_TYPE'] = 'filesystem'
 
 cred = credentials.Certificate("credentials.json")
@@ -22,7 +20,7 @@ def generate_session_secret_key():
     return secrets.token_hex(32)
 
 def create_jwt(payload, secret_key):
-    payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    payload['exp'] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
     token = jwt.encode(payload, secret_key, algorithm='HS256')
     return token
 
