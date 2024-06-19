@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Panel</h2>
+        <form id="add-user-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br><br>
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select><br><br>
+            <input type="submit" value="Add User">
+        </form>
+        <form id="edit-user-form">
+            <label for="edit-username">Username:</label>
+            <input type="text" id="edit-username" name="edit-username" required><br><br>
+            <label for="edit-role">Role:</label>
+            <select id="edit-role" name="edit-role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select><br><br>
+            <input type="submit" value="Edit User">
+        </form>
+        <div id="message"></div>
+        <div id="user-list"></div>
+    </div>
+    <script>
+        async function fetchUsers() {
+            const response = await fetch('/api/admin-api', {
+                method: 'GET',
+            });
+            const users = await response.json();
+            if (response.ok) {
+                const userList = users.users.map(user => {
+                    return `<div>${user.username} - ${user.role}</div>`;
+                });
+                document.getElementById('user-list').innerHTML = userList.join('');
+            } else {
+                document.getElementById('message').innerText = users.msg;
+            }
+        }
+
+        async function addUser(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const response = await fetch('/api/admin-api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password, role })
+            });
+            const result = await response.json();
+            document.getElementById('message').innerText = result.msg;
+            fetchUsers();
+        }
+
+        async function editUser(event) {
+            event.preventDefault();
+            const username = document.getElementById('edit-username').value;
+            const role = document.getElementById('edit-role').value;
+            const response = await fetch('/api/admin-api', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, role })
+            });
+            const result = await response.json();
+            document.getElementById('message').innerText = result.msg;
+            fetchUsers();
+        }
+
+        document.getElementById('add-user-form').addEventListener('submit', addUser);
+        document.getElementById('edit-user-form').addEventListener('submit', editUser);
+        fetchUsers();
+    </script>
+</body>
+</html>
