@@ -9,20 +9,26 @@
 <body>
     <div class="container">
         <h2>Data</h2>
-        <div id="data-list"></div>
+        <!-- Messages and User List -->
+        <div id="message"></div>
+        <div id="user-list"></div>
+
         <script>
-            async function fetchData() {
+            async function fetchUsers() {
                 const response = await fetch('/api/user-api', {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${document.cookie.split('=')[1]}`
-                    }
                 });
-                const data = await response.json();
-                document.getElementById('data-list').innerText = JSON.stringify(data, null, 2);
+                const users = await response.json();
+                if (response.ok) {
+                    const userList = users.map(user => {
+                        return `<div>${user.username} - ${user.role}</div>`;
+                    });
+                    document.getElementById('user-list').innerHTML = userList.join('');
+                } else {
+                    alert(result.msg);
+                }
             }
-
-            fetchData();
+            fetchUsers();
         </script>
         <form action="/logout" method="get">
             <input type="submit" value="Logout">

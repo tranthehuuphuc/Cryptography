@@ -9,6 +9,18 @@
 <body>
     <div class="container">
         <h2>Admin Panel</h2>
+        
+        <h3>All Users</h3>
+        <!-- User List -->
+        <div id="user-list"></div>
+
+        <!-- Get Data Button -->
+        <button id="get-data-button" style="padding: 10px; border: none; border-radius: 4px; background-color: #5cb85c; color: #fff; cursor: pointer; width: 100%;">Get Data</button>
+
+        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        
+        <!-- Add User Form -->
+        <h3>Add User</h3>
         <form id="add-user-form">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required><br><br>
@@ -21,9 +33,16 @@
             </select><br><br>
             <input type="submit" value="Add User">
         </form>
+
+        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        
+        <!-- Edit User Form -->
+        <h3>Edit User</h3>
         <form id="edit-user-form">
             <label for="edit-username">Username:</label>
             <input type="text" id="edit-username" name="edit-username" required><br><br>
+            <label for="edit-password">Password:</label>
+            <input type="password" id="edit-password" name="edit-password" required><br><br>
             <label for="edit-role">Role:</label>
             <select id="edit-role" name="edit-role">
                 <option value="user">User</option>
@@ -31,9 +50,12 @@
             </select><br><br>
             <input type="submit" value="Edit User">
         </form>
-        <div id="message"></div>
-        <div id="user-list"></div>
+        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        <form action="{{ url_for('logout') }}" method="get">
+            <input type="submit" value="Logout">
+        </form>
     </div>
+    
     <script>
         async function fetchUsers() {
             const response = await fetch('/api/admin-api', {
@@ -41,12 +63,12 @@
             });
             const users = await response.json();
             if (response.ok) {
-                const userList = users.users.map(user => {
+                const userList = users.map(user => {
                     return `<div>${user.username} - ${user.role}</div>`;
                 });
                 document.getElementById('user-list').innerHTML = userList.join('');
             } else {
-                document.getElementById('message').innerText = users.msg;
+                alert(result.msg);
             }
         }
 
@@ -63,29 +85,31 @@
                 body: JSON.stringify({ username, password, role })
             });
             const result = await response.json();
-            document.getElementById('message').innerText = result.msg;
+            alert(result.msg);
             fetchUsers();
         }
 
         async function editUser(event) {
             event.preventDefault();
             const username = document.getElementById('edit-username').value;
+            const password = document.getElementById('edit-password').value;
             const role = document.getElementById('edit-role').value;
             const response = await fetch('/api/admin-api', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, role })
+                body: JSON.stringify({ username, password, role })
             });
             const result = await response.json();
-            document.getElementById('message').innerText = result.msg;
+            alert(result.msg);
             fetchUsers();
         }
 
+        document.getElementById('get-data-button').addEventListener('click', fetchUsers);
         document.getElementById('add-user-form').addEventListener('submit', addUser);
         document.getElementById('edit-user-form').addEventListener('submit', editUser);
-        fetchUsers();
+        
     </script>
 </body>
 </html>
