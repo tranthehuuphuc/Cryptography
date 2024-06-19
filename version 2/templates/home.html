@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h2>Welcome</h2>
-    <p>Your role: {{ role }}</p>
-    <nav>
-        <ul>
-            <li><a href="/data">Data</a></li>
-            {% if role == 'admin' %}
-            <li><a href="/admin">Admin</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    <form action="/logout" method="get">
-        <input type="submit" value="Logout">
-    </form>
+    <div class="container">
+        <h2>Welcome</h2>
+        <p>Your role: {{ role }}</p>
+        <nav>
+            <ul>
+                <li><a href="/data">Data</a></li>
+                {% if role == 'admin' %}
+                <li><a href="/admin">Admin</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <form action="/logout" method="get">
+            <input type="submit" value="Logout">
+        </form>
+    </div>
 </body>
 </html>

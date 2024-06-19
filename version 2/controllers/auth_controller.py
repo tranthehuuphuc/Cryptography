@@ -42,22 +42,24 @@ def refresh_token():
         return jsonify({"msg": "Invalid refresh token"}), 401
     return jsonify({"msg": "Invalid refresh token"}), 401
 
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    role = request.form.get('role', 'user')
-    
-    user_ref = db.collection('users').document(username)
-    user = user_ref.get()
-    if not user.exists:
-        hashed_password = hash_password(password)
-        user_ref.set({
-            'password': hashed_password,
-            'role': role
-        })
-        return redirect(url_for('auth.login'))
-    return render_template('register.html', error="Username already exists")
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        role = request.form.get('role', 'user')
+        
+        user_ref = db.collection('users').document(username)
+        user = user_ref.get()
+        if not user.exists:
+            hashed_password = hash_password(password)
+            user_ref.set({
+                'password': hashed_password,
+                'role': role
+            })
+            return redirect(url_for('auth.login'))
+        return render_template('register.html', error="Username already exists")
+    return render_template('register.html')
 
 @auth_bp.route('/users', methods=['GET', 'POST', 'PUT'])
 def manage_users():

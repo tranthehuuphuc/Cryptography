@@ -1,27 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h2>Data</h2>
-    <div id="data-list"></div>
-    <script>
-        async function fetchData() {
-            const response = await fetch('/api/data', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${document.cookie.split('=')[1]}`
-                }
-            });
-            const data = await response.json();
-            document.getElementById('data-list').innerText = JSON.stringify(data, null, 2);
-        }
+    <div class="container">
+        <h2>Data</h2>
+        <div id="data-list"></div>
+        <script>
+            async function fetchData() {
+                const response = await fetch('/api/data', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${document.cookie.split('=')[1]}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('data-list').innerText = JSON.stringify(data, null, 2);
+            }
 
-        fetchData();
-    </script>
-    <form action="/logout" method="get">
-        <input type="submit" value="Logout">
-    </form>
+            fetchData();
+        </script>
+        <form action="/logout" method="get">
+            <input type="submit" value="Logout">
+        </form>
+    </div>
 </body>
 </html>
