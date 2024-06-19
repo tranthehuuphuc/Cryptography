@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const csrftoken = getCookie('csrftoken');
+
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            const response = await fetch('/login/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    apllication: 'json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Login successful');
+                sessionStorage.setItem('token', data.token);
+                document.getElementById('allUsersForm').style.display = 'block';
+            } else {
+                alert(`Login failed: ${data.message}`);
+            }
+        }
+
+        async function getAllUsers() {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                alert('No token found');
+                return;
+            }
+
+            const response = await fetch('/api_call/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                let usersList = '';
+                data.users.forEach(user => {
+                    usersList += `<li>${user.username} (${user.role})</li>`;
+                });
+                document.getElementById('usersList').innerHTML = `<ul>${usersList}</ul>`;
+            } else {
+                alert(`Failed to get users: ${data.message}`);
+            }
+        }
+
+
+    </script>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="button" value="Submit" onclick="login()">
+    </form>
+
+    <div id="allUsersForm" style="display:none;">
+        <h2>All Users</h2>
+        <input type="button" value="Get All Users" onclick="getAllUsers()">
+        <div id="usersList"></div>
+    </div>
+</body>
+</html>
