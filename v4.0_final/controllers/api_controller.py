@@ -78,7 +78,7 @@ def refresh_access_token(refresh_token):
     return jsonify({'new_access_token': new_access_token}), 201
 
 
-@api_bp.route('/admin-api', methods=['GET', 'POST', 'PUT'])
+@api_bp.route('/admin-api', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def admin_api():
     # Check if the user is logged in
     if not request.cookies.get('access_token'):
@@ -86,10 +86,11 @@ def admin_api():
     
     resource = 'admin-api'
     auth_url = url_for('api.auth', _external=True)
-
+    cert_path = '/Users/tranthehuuphuc/Documents/UIT/Internal/Semester4/NT219/Project/Cryptography/v3.0/localhost.crt'
+    
     # Authentication and Authorization
     try:
-        response = requests.get(auth_url, params={'resource': resource}, cookies=request.cookies)
+        response = requests.get(auth_url, params={'resource': resource}, cookies=request.cookies, verify=cert_path)
     except requests.RequestException as e:
         return jsonify({"msg": f"Error connecting to auth service: {str(e)}"}), 500
 
@@ -99,12 +100,12 @@ def admin_api():
         print("Access Token has refreshed and make new request!!!\n")
 
         # Set the new access token in the response
-        response = make_response(jsonify({"msg": "Access granted"}), 201)
+        response = make_response(jsonify({"msg": "Access Token has refreshed and make new request!!!"}), 201)
         response.set_cookie('access_token', new_access_token, httponly=True)
         return response, 201
     
     elif response.status_code != 200:
-        print("Refresh Token has expired!!!\n")
+        print(f"{response.json()}\n")
 
         # If the response status code is not 200, redirect to the login page
         return jsonify({"msg": "Permission denied!"}), 403
@@ -188,10 +189,11 @@ def user_api():
     
     resource = 'user-api'
     auth_url = url_for('api.auth', _external=True)
+    cert_path = '/Users/tranthehuuphuc/Documents/UIT/Internal/Semester4/NT219/Project/Cryptography/v3.0/localhost.crt'
 
     # Authentication and Authorization
     try:
-        response = requests.get(auth_url, params={'resource': resource}, cookies=request.cookies)
+        response = requests.get(auth_url, params={'resource': resource}, cookies=request.cookies, verify=cert_path)
     except requests.RequestException as e:
         return jsonify({"msg": f"Error connecting to auth service: {str(e)}"}), 500
 
