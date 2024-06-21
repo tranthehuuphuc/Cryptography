@@ -103,7 +103,7 @@ def signup():
         # Check if the user already exists
         user_ref = db.collection('users').document(username)
         user = user_ref.get()
-        if user.exists():
+        if user.exists:
             return render_template('signup.html', error="User already exists")
         
         # Create a new user
