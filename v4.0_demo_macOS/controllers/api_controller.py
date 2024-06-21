@@ -203,7 +203,7 @@ def user_api():
         print("Access Token has refreshed and make new request!!!\n")
 
         # Set the new access token in the response
-        response = make_response(jsonify({"msg": "Access granted"}), 201)
+        response = make_response(jsonify({"msg": "Access Token has refreshed and make new request!!!"}), 201)
         response.set_cookie('access_token', new_access_token, httponly=True)
         return response, 201
     
