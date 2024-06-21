@@ -4,7 +4,7 @@ from flask import current_app
 
 def create_access_token(username):
     payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=10),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=60),
         'iat': datetime.datetime.utcnow(),
         'sub': username
     }
@@ -12,7 +12,7 @@ def create_access_token(username):
 
 def create_refresh_token(username):
     payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=20),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=1200),
         'iat': datetime.datetime.utcnow(),
         'sub': username
     }

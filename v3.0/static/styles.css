@@ -22,7 +22,13 @@ body {
 h2 {
     color: #333;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+h3 {
+    color: #333;
+    margin-top: 40px;
+    margin-bottom: 10px;
 }
 
 /* Kiểu dáng cho biểu mẫu */
@@ -49,13 +55,44 @@ select {
 }
 
 /* Kiểu dáng cho nút submit */
-input[type="submit"] {
+input[type="submit"],
+.primary-button {
     padding: 10px;
     border: none;
     border-radius: 4px;
     background-color: #5cb85c; /* Màu xanh lá */
     color: #fff;
     cursor: pointer;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Kiểu dáng cho nút phụ */
+.secondary-button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #888; /* Màu xám */
+    color: #fff;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Kiểu dáng cho danh sách người dùng */
+.user-list {
+    padding: 0;
+    list-style-type: none;
+}
+
+.user-item {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
 /* Kiểu dáng cho thông báo lỗi */
@@ -83,5 +120,25 @@ nav ul li {
 /* Kiểu dáng cho nút đăng xuất */
 form[action="/logout"] {
     text-align: center;
+    margin-top: 20px;
+}
+
+.box {
+    padding: 5%;
+    margin: 0;
+    border: 0.5px solid #000;
+    border-radius: 10px;
+}
+
+/* Kiểu dáng cho đường phân cách */
+.divider {
+    background-color: #ddd;
+    height: 1px;
+    margin: 30px 0;
+    padding: 0;
+}
+
+/* Thêm các kiểu dáng cho form xóa người dùng */
+#delete-user-form {
     margin-top: 20px;
 }

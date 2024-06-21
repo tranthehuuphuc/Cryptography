@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Panel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>User Panel</h2>
+        
+        <h3>All Users</h3>
+        <!-- User List -->
+        <div id="user-list" class="user-list"></div>
+
+        <!-- Get Data Button -->
+        <button id="get-data-button" class="primary-button">Get Data</button>
+
+        <div class="divider"></div>
+
+        <script>
+            async function fetchUsers() {
+                try {
+                    const response = await fetch('/api/user-api', {
+                        method: 'GET',
+                        credentials: 'include'
+                    });
+
+                    if (response.status === 200) {
+                        const users = await response.json();
+                        const userList = users.map(user => {
+                            return `<div class="user-item"><b>${user.username}</b>\t[${user.role}]</div>`;
+                        });
+                        document.getElementById('user-list').innerHTML = userList.join('');
+                    } else if (response.status === 201) {
+                        fetchUsers();
+                    } else {
+                        const result = await response.json();
+                        alert(result.msg);
+                        window.location.href = '/logout';
+                    }
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                    window.location.href = '/logout';
+                }
+            }
+
+            document.getElementById('get-data-button').addEventListener('click', fetchUsers);
+        </script>
+        <form action="/logout" method="get">
+            <input type="submit" value="Logout" class="secondary-button" style="background-color: gray;">
+        </form>
+    </div>
+</body>
+</html>

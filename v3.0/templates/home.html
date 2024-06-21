@@ -4,27 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        /* Thiết lập lại margin và padding mặc định */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Phần container chung cho tất cả các trang */
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Kiểu dáng cho tiêu đề */
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+
+        /* Kiểu dáng cho biểu mẫu */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Kiểu dáng cho nhãn */
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Kiểu dáng cho input và select */
+        input[type="text"],
+        input[type="password"],
+        select {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 22px); /* Điều chỉnh chiều rộng để vừa container */
+        }
+
+        /* Kiểu dáng cho nút submit */
+        input[type="submit"],
+        .primary-button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #5cb85c; /* Màu xanh lá */
+            color: #fff;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Kiểu dáng cho nút phụ */
+        .secondary-button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #888; /* Màu xám */
+            color: #fff;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Kiểu dáng cho danh sách người dùng */
+        .user-list {
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .user-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* Kiểu dáng cho thông báo lỗi */
+        .error {
+            color: #d9534f; /* Màu đỏ cho thông báo lỗi */
+            margin-top: 10px;
+        }
+
+        /* Kiểu dáng cho liên kết */
+        a {
+            color: #5cb85c; /* Màu xanh lá cho liên kết */
+        }
+
+        /* Kiểu dáng cho danh sách điều hướng */
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        /* Kiểu dáng cho nút đăng xuất */
+        form[action="/logout"] {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .box {
+            padding: 5%;
+            margin: 0;
+            border: 0.5px solid #000;
+            border-radius: 10px;
+        }
+
+        /* Kiểu dáng cho đường phân cách */
+        .divider {
+            background-color: #ddd;
+            height: 1px;
+            margin: 30px 0;
+            padding: 0;
+        }
+
+        /* Thêm các kiểu dáng cho form xóa người dùng */
+        #delete-user-form {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>Welcome</h2>
-        <p>Your role: {{ role }}</p>
+        <p>Your role: <b>{{ role }}</b></p>
         <nav>
             <ul>
-                <li><a href="/data">Data</a></li>
+                <li>
+                    <a href="/user">
+                        <button class="primary-button">User Panel</button>
+                    </a>
+                </li>
                 {% if role == 'admin' %}
-                <li><a href="/admin">Admin</a></li>
+                <li>
+                    <a href="/admin">
+                        <button class="primary-button" style="background-color: rgb(255, 180, 18);">Admin Panel</button>
+                    </a>
+                </li>
                 {% endif %}
             </ul>
         </nav>
 
-        <script>
-
-        </script>
+        <div class="divider"></div>
 
         <form action="{{ url_for('logout') }}" method="get">
-            <input type="submit" value="Logout">
+            <input type="submit" value="Logout" class="secondary-button" style="background-color: gray;">
         </form>
     </div>
 </body>

@@ -2,3 +2,4 @@ Flask
 firebase-admin
 PyJWT
 bcrypt
+python-dotenv

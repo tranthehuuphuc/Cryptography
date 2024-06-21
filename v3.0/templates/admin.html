@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -12,63 +12,94 @@
         
         <h3>All Users</h3>
         <!-- User List -->
-        <div id="user-list"></div>
+        <div id="user-list" class="user-list"></div>
 
         <!-- Get Data Button -->
-        <button id="get-data-button" style="padding: 10px; border: none; border-radius: 4px; background-color: #5cb85c; color: #fff; cursor: pointer; width: 100%;">Get Data</button>
+        <button id="get-data-button" class="primary-button">Get Data</button>
 
-        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        <div class="divider"></div>
         
         <!-- Add User Form -->
         <h3>Add User</h3>
-        <form id="add-user-form">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br><br>
-            <label for="role">Role:</label>
-            <select id="role" name="role">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select><br><br>
-            <input type="submit" value="Add User">
-        </form>
-
-        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        <div class="box">
+            <form id="add-user-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                
+                <label for="role">Role:</label>
+                <select id="role" name="role">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                
+                <input type="submit" value="Add User" class="primary-button">
+            </form>
+        </div>
         
         <!-- Edit User Form -->
         <h3>Edit User</h3>
-        <form id="edit-user-form">
-            <label for="edit-username">Username:</label>
-            <input type="text" id="edit-username" name="edit-username" required><br><br>
-            <label for="edit-password">Password:</label>
-            <input type="password" id="edit-password" name="edit-password" required><br><br>
-            <label for="edit-role">Role:</label>
-            <select id="edit-role" name="edit-role">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select><br><br>
-            <input type="submit" value="Edit User">
-        </form>
-        <div style="background-color: #d9d9d9; width: 100%; height: 0.05vw; margin: 30px 0; padding: 0.5px;"></div>
+        <div class="box">
+            <form id="edit-user-form">
+                <label for="edit-username">Username:</label>
+                <input type="text" id="edit-username" name="edit-username" required>
+                
+                <label for="edit-password">Password:</label>
+                <input type="password" id="edit-password" name="edit-password" required>
+                
+                <label for="edit-role">Role:</label>
+                <select id="edit-role" name="edit-role">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                
+                <input type="submit" value="Edit User" class="primary-button">
+            </form>
+        </div>
+
+
+        <!-- Delete User Form -->
+        <h3>Delete User</h3>
+        <div class="box">
+            <form id="delete-user-form">
+                <label for="delete-username">Username:</label>
+                <input type="text" id="delete-username" name="delete-username" required>
+                
+                <input type="submit" value="Delete User" class="primary-button">
+            </form>
+        </div>
+
         <form action="{{ url_for('logout') }}" method="get">
-            <input type="submit" value="Logout">
+            <input type="submit" value="Logout" class="secondary-button" style="background-color: gray;">
         </form>
     </div>
-    
+
     <script>
         async function fetchUsers() {
-            const response = await fetch('/api/admin-api', {
-                method: 'GET',
-            });
-            const users = await response.json();
-            if (response.ok) {
-                const userList = users.map(user => {
-                    return `<div>${user.username} - ${user.role}</div>`;
+            try {
+                const response = await fetch('/api/admin-api', {
+                    method: 'GET',
+                    credentials: 'include'
                 });
-                document.getElementById('user-list').innerHTML = userList.join('');
-            } else {
-                alert(result.msg);
+
+                if (response.status === 200) {
+                    const users = await response.json();
+                    const userList = users.map(user => {
+                        return `<div class="user-item"><b>${user.username}</b>\t[${user.role}]</div>`;
+                    });
+                    document.getElementById('user-list').innerHTML = userList.join('');
+                } else if (response.status === 201) {
+                    fetchUsers();
+                } else {
+                    const result = await response.json();
+                    alert(result.msg);
+                    window.location.href = '/logout';
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                window.location.href = '/logout';
             }
         }
 
@@ -77,16 +108,32 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const role = document.getElementById('role').value;
-            const response = await fetch('/api/admin-api', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password, role })
-            });
-            const result = await response.json();
-            alert(result.msg);
-            fetchUsers();
+            try {
+                const response = await fetch('/api/admin-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    alert(result.msg);
+                    fetchUsers();
+                } else if (response.status === 201) {
+                    addUser();
+                } else if (response.status === 403) {
+                    alert(result.msg);
+                    window.location.href = '/logout';
+                } else {
+                    alert(result.msg);
+                }
+            }
+            catch {
+                alert('Error adding user');
+            }
         }
 
         async function editUser(event) {
@@ -94,22 +141,71 @@
             const username = document.getElementById('edit-username').value;
             const password = document.getElementById('edit-password').value;
             const role = document.getElementById('edit-role').value;
-            const response = await fetch('/api/admin-api', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password, role })
-            });
-            const result = await response.json();
-            alert(result.msg);
-            fetchUsers();
+
+            try {
+                const response = await fetch('/api/admin-api', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    alert(result.msg);
+                    fetchUsers();
+                } else if (response.status === 201) {
+                    editUser();
+                } else if (response.status === 403) {
+                    alert(result.msg);
+                    window.location.href = '/logout';
+                } else {
+                    alert(result.msg);
+                }
+            }
+            catch {
+                alert('Error editing user');
+            }
+        }
+
+        async function deleteUser(event) {
+            event.preventDefault();
+            const username = document.getElementById('delete-username').value;
+
+            try {
+                const response = await fetch('/api/admin-api', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username })
+                });
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    alert(result.msg);
+                    fetchUsers();
+                } else if (response.status === 201) {
+                    deleteUser();
+                } else if (response.status === 403) {
+                    alert(result.msg);
+                    window.location.href = '/logout';
+                } else {
+                    alert(result.msg);
+                }
+            }
+            catch {
+                alert('Error deleting user');
+            }
         }
 
         document.getElementById('get-data-button').addEventListener('click', fetchUsers);
         document.getElementById('add-user-form').addEventListener('submit', addUser);
         document.getElementById('edit-user-form').addEventListener('submit', editUser);
-        
+        document.getElementById('delete-user-form').addEventListener('submit', deleteUser);
     </script>
 </body>
 </html>
