@@ -1,4 +1,9 @@
-*/__pycache__
-*/venv
-*/.DS_Store
-.DS_Store
+# Bỏ qua các tệp hệ thống của macOS
+**/.DS_Store
+
+# Bỏ qua tất cả các thư mục __pycache__ bất kể vị trí
+**/__pycache__/
+
+# Bỏ qua tất cả các thư mục venv bất kể vị trí
+**/venv/
+
