@@ -7,3 +7,4 @@
 # Bỏ qua tất cả các thư mục venv bất kể vị trí
 **/venv/
 
+**/.env
